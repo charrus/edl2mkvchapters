@@ -21,6 +21,8 @@ const char * chapterEntry =
         "      <ChapterDisplay>\n"
         "        <ChapterString>%s</ChapterString>\n"
         "      </ChapterDisplay>\n"
+        "      <ChapterFlagHidden>%d</ChapterFlagHidden>\n"
+        "      <ChapterFlagEnabled>%d</ChapterFlagEnabled>\n"
         "    </ChapterAtom>\n";
 
 const char * xmlTrailer =
@@ -79,6 +81,8 @@ void processFile( const char * inputFilename )
         tTimestamp      start, end;
         int             type;
         const char *    typeAsStr;
+        int             chapterEnabled;
+        int             chapterHidden;
 
         fprintf( output, "%s", xmlHeader );
 
@@ -93,11 +97,13 @@ void processFile( const char * inputFilename )
                 setTimestamp( &start, prevSec );
                 setTimestamp( &end, startSec );
                 typeAsStr = "Show";
+                chapterEnabled = 1;
+                chapterHidden = 0;
 
                 fprintf( output, chapterEntry,
                          start.hours, start.minutes, start.seconds,
                          end.hours, end.minutes, end.seconds,
-                         typeAsStr
+                         typeAsStr, chapterHidden, chapterEnabled
                 );
             }
 
@@ -108,28 +114,38 @@ void processFile( const char * inputFilename )
             {
             case 0:
                 typeAsStr = "Cut";
+                chapterEnabled = 0;
+                chapterHidden = 1;
                 break;
 
             case 1:
                 typeAsStr = "Mute";
+                chapterEnabled = 1;
+                chapterHidden = 0;
                 break;
 
             case 2:
                 typeAsStr = "Scene";
+                chapterEnabled = 1;
+                chapterHidden = 0;
                 break;
 
             case 3:
                 typeAsStr = "Commercials";
+                chapterEnabled = 0;
+                chapterHidden = 1;
                 break;
 
             default:
                 typeAsStr = "(unknown)";
+                chapterEnabled = 1;
+                chapterHidden = 0;
                 break;
             }
             fprintf( output, chapterEntry,
                      start.hours, start.minutes, start.seconds,
                      end.hours,   end.minutes,   end.seconds,
-                     typeAsStr
+                     typeAsStr, chapterHidden, chapterEnabled
                      );
 
             prevSec = endSec;
